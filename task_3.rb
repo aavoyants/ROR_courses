@@ -1,12 +1,12 @@
 class Car
   ALLOWED = [:engine, :size, :turbo]
 
-  def initialize(args = {}, &block)
+  def initialize args = {}, &block
     instance_eval &block if block_given?
     args.each { |k, v| ALLOWED.include?(k) ? instance_variable_set("@#{k}", v) : raise("the variable '@#{k}' is not allowed") }
   end
 
-  def method_missing(name, *args)
+  def method_missing name, *args
     name = name.to_s
     name.chop! if name =~ /=$/
     value = args[0]
@@ -15,7 +15,7 @@ class Car
     super unless ALLOWED.include? name.to_sym
 
     self.class.send :attr_accessor, name
-    instance_variable_set("@#{name}", value)
+    instance_variable_set "@#{name}", value
   end
 
   def engine_info
