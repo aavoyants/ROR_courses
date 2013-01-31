@@ -1,5 +1,4 @@
 class Car
-
   ALLOWED = [:engine, :size, :turbo]
 
   def initialize(args = {}, &block)
