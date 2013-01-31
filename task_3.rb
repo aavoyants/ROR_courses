@@ -10,7 +10,7 @@ class Car
     end
   end
 
-  def method_missing name, *args, &block
+  def method_missing(name, *args)
     name = name.to_s
     name.chop! if name =~ /=$/
     if ALLOWED.include? name.to_sym
