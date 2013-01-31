@@ -14,15 +14,9 @@ class Car
     name = name.to_s
     name.chop! if name =~ /=$/
     if ALLOWED.include? name.to_sym
-      #instance_variable_set("@#{name}", args[0])
-      #self.class.send(:define_method, "#{name}=" proc { instance_variable_set("@#{name}", args[0]) } )
-      #self.class.send(:define_method, name, proc { instance_variable_get("@#{name}") } )
-      self.class.send(:define_method, "#{name}=") do
-        instance_variable_set("@#{name}", args[0])
-      end
-      self.class.send(:define_method, name) do
-        instance_variable_get("@#{name}")
-      end
+      instance_variable_set("@#{name}", args[0])
+      self.class.send(:define_method, "#{name}=") { |arg| instance_variable_set("@#{name}", arg) }
+      self.class.send(:define_method, name) { instance_variable_get("@#{name}") }
     else
       super
     end
@@ -34,16 +28,9 @@ class Car
   end
 end
 
-a = Car.new
-a.engine = :diesel
-a.size = 1.6
-a.engine= :gas
-
-p a.respond_to? 'engine'  # => true
-p a.respond_to? 'engine=' # => true
-p a.engine  # returns :diesel instead of :gas
-
-#-----------------------------------------------------------
+#a = Car.new
+#a.engine = :diesel
+#a.size = 1.6
 #p a.engine #should return :diesel
 #p a.size #should return 1.6
 #a.engine_info #should print "1.6 Diesel engine"
