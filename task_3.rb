@@ -1,13 +1,9 @@
 class Car
-
   ALLOWED = [:engine, :size, :turbo]
 
   def initialize(args = {}, &block)
-    if block_given?
-      instance_eval &block
-    else
-      args.each { |k, v| ALLOWED.include?(k) ? instance_variable_set("@#{k}", v) : raise("the variable '@#{k}' is not allowed") }
-    end
+    instance_eval &block if block_given?
+    args.each { |k, v| ALLOWED.include?(k) ? instance_variable_set("@#{k}", v) : raise("the variable '@#{k}' is not allowed") }
   end
 
   def method_missing(name, *args)
@@ -18,8 +14,7 @@ class Car
     raise "Try to set variable @#{name} first" unless value
     super unless ALLOWED.include? name.to_sym
 
-    self.class.send(:define_method, name) { instance_variable_get("@#{name}") }
-    self.class.send(:define_method, "#{name}=") { |arg| instance_variable_set("@#{name}", arg) }
+    self.class.send :attr_accessor, name
     instance_variable_set("@#{name}", value)
   end
 
