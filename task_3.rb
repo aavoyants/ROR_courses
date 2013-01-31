@@ -13,13 +13,14 @@ class Car
   def method_missing(name, *args)
     name = name.to_s
     name.chop! if name =~ /=$/
-    if ALLOWED.include? name.to_sym
-      instance_variable_set("@#{name}", args[0])
-      self.class.send(:define_method, "#{name}=") { |arg| instance_variable_set("@#{name}", arg) }
-      self.class.send(:define_method, name) { instance_variable_get("@#{name}") }
-    else
-      super
-    end
+    value = args[0]
+
+    raise "Try to set variable @#{name} first" unless value
+    super unless ALLOWED.include? name.to_sym
+
+    self.class.send(:define_method, name) { instance_variable_get("@#{name}") }
+    self.class.send(:define_method, "#{name}=") { |arg| instance_variable_set("@#{name}", arg) }
+    instance_variable_set("@#{name}", value)
   end
 
   def engine_info
@@ -34,12 +35,10 @@ end
 #p a.engine #should return :diesel
 #p a.size #should return 1.6
 #a.engine_info #should print "1.6 Diesel engine"
-#Car.new(:engine => :gas, :size => 1.6).engine_info
-#should print "1.6 Gas engine"
+#Car.new(:engine => :gas, :size => 1.6).engine_info #should print "1.6 Gas engine"
 #Car.new.engine_info #should fail
 #Car.new(asdasd: true) #should fail
-#Car.new(engine: :diesel, size: 2, turbo: true).engine_info
-#prints "Turbo diesel engine 2.0"
+#Car.new(engine: :diesel, size: 2, turbo: true).engine_info #prints "Turbo diesel engine 2.0"
 #a = Car.new do
 #  self.engine= :diesel
 #  self.size= 3
