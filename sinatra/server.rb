@@ -4,15 +4,28 @@ require 'json'
 require 'dm-core'
 require 'dm-migrations'
 require 'dm-sqlite-adapter'
-require './userdata'
 
 enable :sessions
 #user = nil  # 1 - destroys user in session on restart
 DataMapper::setup(:default, "sqlite://#{Dir.pwd}/userdata.db")
 
+class Userdata
+  include DataMapper::Resource
+
+  property :id, Serial
+  property :ip, String
+  property :time, DateTime
+end
+
+DataMapper.auto_migrate!
+
 before do
   #session[:user] = nil unless user  # 1
   redirect to('/auth') unless request.path_info == '/auth' || session[:user]
+end
+
+get '/users' do
+  {users: Userdata.all.count}.to_json
 end
 
 get '/' do
@@ -59,4 +72,8 @@ end
 
 def info arg
   params[:id].nil? ? arg : arg[params[:id].to_i - 1]
+end
+
+def savedata
+  Userdata.create :ip => request.ip, :time => DateTime.now
 end
