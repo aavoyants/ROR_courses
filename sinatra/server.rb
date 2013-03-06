@@ -15,10 +15,6 @@ before do
   redirect to('/auth') unless request.path_info == '/auth' || session[:user]
 end
 
-get '/users' do
-  {user: Userdata.all.count}.to_json
-end
-
 get '/' do
   {
     memory: memory,
