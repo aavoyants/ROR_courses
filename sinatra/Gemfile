@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'sinatra'
-gem 'sys-filesystem'
 gem 'json'
+gem 'data_mapper'
+gem 'dm-sqlite-adapter'
